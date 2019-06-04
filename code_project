@@ -1,0 +1,718 @@
+/*
+thanh vien:
+Tran Duy Huynh
+Nguyen Van Minh
+Tran Thi Quynh Nhu
+Nguyen Thi Thuy Duong
+*/
+#include "Admin.h"
+#include "GiaoVien.h"
+#include "SinhVien.h"
+#include"PhieuMuon.h"
+#include "Sach.h"
+#include <conio.h>
+#include<vector>
+
+// khai bao nguyen mau ham con
+void textcolor(WORD color);
+
+//menu
+void menu(string sMenu);
+
+//cac ham chuc nang
+void CN_TimKiemThongTin();
+void CN_QuanLyPhieuMuon();
+//void CN_QuanLyBanDoc();
+void CN_QuanlySach();
+void CN_ThongKe();
+
+//user
+void docUserPass(vector <Admin*> &Ad);
+string passwordInput(unsigned maxLength);
+void login();
+bool kiemTraLogin(vector <Admin*> Ad, string user, string pass);
+
+
+// DS ban doc
+void docDSBanDoc(vector <BanDoc*> &p);
+void xuatDSBanDoc(vector <BanDoc*> p);
+void timBanDoc(vector <BanDoc*> p, string sMa);
+void ghiDSBanDoc(vector <BanDoc*> p);
+
+//DS Sach
+void docDSSach(vector <Sach*> &s);
+void xuatDSSach(vector <Sach*> s);
+void ghiDSSach(vector <Sach*> s);
+void timSach(vector <Sach*> s, string sMa);
+
+//DS Phieu Muon
+void docDSPhieuMuon(vector <PhieuMuon*> &PM);
+void xuatDSPhieuMuon(vector <PhieuMuon*> PM);
+void ghiDSPhieuMuon(vector <PhieuMuon*> PM);
+
+
+
+// khai bao bien toan cuc
+int PhieuMuon::nTongPM = 0;
+
+int nChonCN = 0, nTim = 0, nQuanLy = 0, nQuanLyPM = 0, nQuanLySach = 0, nQuanLyTK = 0, nQuanLyBD = 0;
+vector <Sach*> s;
+vector <BanDoc*> p;
+vector <Admin*> Ad;
+vector <PhieuMuon*> PM;
+string sMa = "";
+void main()
+{
+	//doc danh sach
+	docUserPass(Ad);
+	docDSBanDoc(p);
+	docDSSach(s);
+	docDSPhieuMuon(PM);
+	
+
+	//login
+	do
+	{
+		system("cls");
+		menu("MENUCHINH");
+		textcolor(9);
+		cout << "Moi ban chon chuc nang: ";
+		textcolor(9);
+		cin >> nChonCN;
+		switch (nChonCN)
+		{
+		case 1:
+			xuatDSSach(s);
+			break;
+		case 2:
+			xuatDSBanDoc(p);
+			break;
+		case 3:
+			CN_TimKiemThongTin();
+			break;
+		case 4:
+			login();
+			do
+			{
+				system("cls");
+				menu("MENUQUANLY");
+				textcolor(9);
+				cout << "Moi ban chon chuc nang: ";
+				textcolor(9);
+				cin >> nQuanLy;
+				switch (nQuanLy)
+				{
+				case 1:
+					CN_QuanLyPhieuMuon();
+					break;
+				case 2:
+					CN_QuanlySach();
+					break;
+
+				case 3:
+					//menu("MENUQUANLYBANDOC");
+					break;
+
+				case 4:
+					CN_ThongKe();
+					break;
+
+				default:
+					cout << "Ban chon thoat chuc nang quan li!!\n";
+					break;
+				}
+			} while (nQuanLy >= 1 && nQuanLy <= 4);
+			break;
+		default:
+			cout << "Ban chon thoat chuong trinh!!!\n";
+		}
+		system("pause");
+	} while (nChonCN >= 1 && nChonCN <= 4);
+}
+
+
+// Cac ham chuc nang
+//Login
+void login()
+{
+	string sUser, sPass;
+dd:
+	system("cls");
+	cout << "\t\t************************************\n";
+	textcolor(10);
+	cout << "\t\t*              Login               *\n";
+	textcolor(7);
+	cout << "\t\t************************************\n";
+	textcolor(7);
+	cout << "\n\t\tNhap Username: ";
+	rewind(stdin);
+	getline(cin, sUser);
+	cout << "\n\t\tNhap Password: ";
+	rewind(stdin);
+	sPass = passwordInput(6);
+	if (kiemTraLogin(Ad, sUser, sPass) == true)
+	{
+		
+		cout << "\nDang nhap thanh cong!...";
+		Sleep(1000);
+	}
+	else
+	{
+		cout << "\nDang nhap that bai! Vui long nhap lai...";
+		Sleep(1000);
+		goto dd;
+	}
+}
+bool kiemTraLogin(vector <Admin*> Ad, string user, string pass)
+{
+	for (int i = 0; i < Ad.size(); i++)
+	{
+		if (user == Ad[i]->getUser() && pass == Ad[i]->getPass())
+		{
+			return true;
+		}
+	}
+}
+
+
+//cac menu
+void menu(string sMenu)
+{
+	if (sMenu == "MENUCHINH")
+	{
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		cout << "\t\t\t*";
+		textcolor(10);
+		cout << "\t\tMENU CHINH\t\t";
+		textcolor(14);
+		cout << "*" << endl;
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 1. ";
+		textcolor(15);
+		cout << "Thong tin sach." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 2. ";
+		textcolor(15);
+		cout << "Thong tin ban doc." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 3. ";
+		textcolor(15);
+		cout << "Tim kiem thong tin." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 4. ";
+		textcolor(15);
+		cout << "Quan ly." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 5. ";
+		textcolor(12);
+		cout << "Thoat!!!." << endl;
+	}
+	else if (sMenu == "TIMTHONGTIN")
+	{
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		cout << "\t\t\t*";
+		textcolor(10);
+		cout << "\t\tTIM THONG TIN\t\t";
+		textcolor(14);
+		cout << "*" << endl;
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 1. ";
+		textcolor(15);
+		cout << "Tim sach theo ma sach." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 2. ";
+		textcolor(15);
+		cout << "Tim ban doc theo ma ban doc." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 3. ";
+		textcolor(12);
+		cout << "Thoat!!!" << endl;
+	}
+	else if (sMenu == "MENUQUANLY")
+	{
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		cout << "\t\t\t*";
+		textcolor(10);
+		cout << "\t\tMENU QUAN LY\t\t";
+		textcolor(14);
+		cout << "*" << endl;
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 1. ";
+		textcolor(15);
+		cout << "Quan ly phieu muon." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 2. ";
+		textcolor(15);
+		cout << "Quan ly sach." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 3. ";
+		textcolor(15);
+		cout << "Quan ly ban doc." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 4. ";
+		textcolor(15);
+		cout << "Thong ke." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 5. ";
+		textcolor(12);
+		cout << "Thoat!!!." << endl;
+	}
+	else if (sMenu == "MENUQUANLYPHIEUMUON")
+	{
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		cout << "\t\t\t*";
+		textcolor(10);
+		cout << "\tMENU QUAN LY PHIEU MUON\t\t";
+		textcolor(14);
+		cout << "*" << endl;
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 1. ";
+		textcolor(15);
+		cout << "Muon sach." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 2. ";
+		textcolor(15);
+		cout << "Tra sach." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 3. ";
+		textcolor(15);
+		cout << "In danh sach phieu muon." << endl;
+		textcolor(10);
+		cout << "\t\t\t\t 4. ";
+		textcolor(12);
+		cout << "Thoat!!!." << endl;
+	}
+	else if (sMenu == "MENUQUANLYSACH")
+	{
+	    textcolor(14);
+	    cout << "\t\t\t*****************************************" << endl;
+	    cout << "\t\t\t*";
+	    textcolor(10);
+	    cout << "\t\tMENU QUAN LY SACH\t";
+	    textcolor(14);
+	    cout << "*" << endl;
+	    textcolor(14);
+	    cout << "\t\t\t*****************************************" << endl;
+	    textcolor(10);
+	    cout << "\t\t\t\t 1. ";
+	    textcolor(15);
+	    cout << "Them sach moi." << endl;
+	    textcolor(10);
+	    cout << "\t\t\t\t 2. ";
+	    textcolor(15);
+	    cout << "Xoa sach." << endl;
+	    textcolor(10);
+	    cout << "\t\t\t\t 3. ";
+	    textcolor(15);
+	    cout << "Them danh sach sach." << endl;
+	    textcolor(10);
+	    cout << "\t\t\t\t 4. ";
+	    textcolor(12);
+	    cout << "Thoat!!!." << endl;
+	}
+	else if (sMenu == "MENUTHONGKE")
+	{
+	    textcolor(14);
+	    cout << "\t\t\t*****************************************" << endl;
+	    cout << "\t\t\t*";
+	    textcolor(10);
+		cout << "\t\tMENU THONG KE\t\t";
+		textcolor(14);
+		cout << "*" << endl;
+		textcolor(14);
+		cout << "\t\t\t*****************************************" << endl;
+		textcolor(10);
+		cout << "\t\t\t 1. ";
+		textcolor(15);
+		cout << "Tong so sach con lai trong thu vien." << endl;
+		textcolor(10);
+		cout << "\t\t\t 2. ";
+		textcolor(15);
+		cout << "Tong so sach da muon." << endl;
+		textcolor(10);
+		cout << "\t\t\t 3. ";
+		textcolor(15);
+		cout << "Liet ke sach ma 1 ban doc dang muon." << endl;
+		textcolor(10);
+		cout << "\t\t\t 4. ";
+		textcolor(12);
+		cout << "Thoat!!!." << endl;
+	}
+	
+}
+
+//user
+void docUserPass(vector <Admin*> &Ad)
+{
+	ifstream file;
+	file.open("Admin.txt");
+	if (file.is_open() == true)
+	{
+		cout << "Mo file thanh cong\n";
+	}
+	else
+		cout << "Mo file that bai !\n";
+	Admin * q;
+	int nN = 0;
+	file >> nN; file.ignore(1);
+	for (int i = 0; i < nN; i++)
+	{
+		q = new Admin;
+		q->readAdmin(file);
+		Ad.push_back(q);
+	}
+	file.close();
+}
+string passwordInput(unsigned maxLength)
+{
+	rewind(stdin);
+	string pw = "";
+	for (char c; (c = _getch()); )
+	{
+		if (c == '\n' || c == '\r') { 
+			cout << "\n";
+			break;
+		}
+		else if (c == '\b') { 
+			cout << "\b \b";
+			if (!pw.empty()) pw.erase(pw.size() - 1);
+		}
+		else if (c == -32) { 
+			_getch(); 
+		}
+		else if (isprint(c) && pw.size() < maxLength) { 
+			cout << '*';
+			pw += c;
+		}
+	}
+	return pw;
+	rewind(stdin);
+}
+
+//cac ham chuc nang
+void CN_TimKiemThongTin()
+{
+	do
+	{
+		system("cls");
+		menu("TIMTHONGTIN");
+		textcolor(9);
+		cout << "Chon tim theo: ";
+		cin >> nTim;
+		switch (nTim)
+		{
+		case 1:
+			textcolor(15);
+			cout << "Nhap ma sach can tim: ";
+			cin >> sMa;
+			timSach(s, sMa);
+			break;
+		case 2:
+			textcolor(15);
+			cout << "Nhap ma ban doc can tim: ";
+			cin >> sMa;
+			timBanDoc(p, sMa);
+			break;
+		default:
+			textcolor(14);
+			cout << "Ban chon thoat tim kiem!!!\n";
+			break;
+		}
+		system("pause");
+	} while (nTim >= 1 && nTim <= 2);
+}
+void CN_QuanLyPhieuMuon()
+{
+	do
+	{
+		system("cls");
+		menu("MENUQUANLYPHIEUMUON");
+		textcolor(9);
+		cout << "Moi ban chon chuc nang: ";
+		textcolor(9);
+		cin >> nChonCN;
+		switch (nChonCN)
+		{
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			cout << "Ban chon thoat quan li phieu muon!\n";
+			break;
+		}
+		system("pause");
+	} while (nQuanLyPM >= 1 && nQuanLyPM <= 4);
+}
+//void CN_QuanLyBanDoc();
+void CN_QuanlySach()
+{
+	do
+	{
+		system("cls");
+		menu("MENUQUANLYSACH");
+		textcolor(9);
+		cout << "Moi ban chon chuc nang: ";
+		textcolor(9);
+		cin >> nChonCN;
+		switch (nChonCN)
+		{
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			cout << "Ban chon thoat quan li sach!\n";
+			break;
+		}
+		system("pause");
+	} while (nQuanLySach >= 1 && nQuanLySach <= 4);
+}
+void CN_ThongKe()
+{
+	do
+	{
+		system("cls");
+		menu("MENUTHONGKE");
+		textcolor(9);
+		cout << "Moi ban chon chuc nang: ";
+		textcolor(9);
+		cin >> nChonCN;
+		switch (nChonCN)
+		{
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			cout << "Ban chon thoat quan li thong ke!\n";
+			break;
+		}
+		system("pause");
+	} while (nQuanLyTK >= 1 && nQuanLyTK <= 4);
+}
+
+//ban doc
+void docDSBanDoc(vector <BanDoc*> &p)
+{
+	ifstream file;
+	file.open("BanDoc.txt");
+	if (file.is_open() == true)
+	{
+		cout << "Mo file thanh cong\n";
+	}
+	else
+		cout << "Mo file that bai !\n";
+	int nLoaiBanDoc = 0, nN = 0;
+	file >> nN; file.ignore(1);
+	BanDoc *q;
+	for (int i = 0; i < nN; i++)
+	{
+		file >> nLoaiBanDoc; file.ignore(1);
+		if (nLoaiBanDoc == 1)
+		{
+			q = new GiaoVien;
+			q->ReadBanDoc(file);
+			p.push_back(q);
+		}
+		else
+		{
+			q = new SinhVien;
+			q->ReadBanDoc(file);
+			p.push_back(q);
+		}
+	}
+	file.close();
+
+}
+void xuatDSBanDoc(vector <BanDoc*> p)
+{
+	textcolor(10);
+	cout << "\nDanh sach ban doc trong thu vien \n";
+	for (int i = 0; i < p.size(); i++)
+	{
+		textcolor(14);
+		p[i]->ouputBanDoc();
+	}
+}
+void timBanDoc(vector <BanDoc*> p, string sMa)
+{
+	int sDK = 0;
+	for (int i = 0; i < p.size(); i++)
+	{
+		if (sMa == p[i]->getMaBD())
+		{
+			textcolor(14);
+			p[i]->ouputBanDoc();
+			sDK = 1;
+		}
+	}
+	if (sDK == 0)
+	{
+		textcolor(14);
+		cout << "Khong tim thay thanh vien trong danh sach!!\n";
+	}
+	
+}
+void ghiDSBanDoc(vector <BanDoc*> p)
+{
+	textcolor(10);
+	cout << "\nDanh sach ban doc trong thu vien \n";
+	ofstream file;
+	file.open("BanDoc.txt");
+	file << p.size() << endl;
+	for (int i = 0; i < p.size(); i++)
+	{
+		textcolor(14);
+		p[i]->WriteBanDoc(file);
+	}
+	file.close();
+}
+
+//sach
+void docDSSach(vector <Sach*> &s)
+{
+	ifstream file;
+	file.open("Sach.txt");
+	if (file.is_open() == true)
+	{
+		cout << "Mo file thanh cong\n";
+	}
+	else
+		cout << "Mo file that bai !\n";
+	int nN = 0;
+	Sach* q;
+	file >> nN; file.ignore(1);
+	for (int i = 0; i < nN; i++)
+	{
+		q = new Sach;
+		q->readSach(file);
+		s.push_back(q);
+	}
+	file.close();
+}
+void xuatDSSach(vector <Sach*> s)
+{
+	textcolor(10);
+	cout << "\nDanh sach sach trong thu vien \n";
+	for (int i = 0; i < s.size(); i++)
+	{
+		textcolor(14);
+		s[i]->XuatSach();
+	}
+}
+void ghiDSSach(vector <Sach*> s)
+{
+	textcolor(10);
+	cout << "\nDanh sach sach trong thu vien \n";
+	ofstream file;
+	file.open("Sach.txt");
+	file << s.size() << endl;
+	for (int i = 0; i < s.size(); i++)
+	{
+		textcolor(14);
+		s[i]->writeSach(file);
+	}
+	file.close();
+}
+void timSach(vector <Sach*> s, string sMa)
+{
+	int sDK = 0;
+	for (int i = 0; i < s.size(); i++)
+	{
+		if (sMa == s[i]->getMaSach())
+		{
+			textcolor(14);
+			s[i]->XuatSach();
+			sDK = 1;
+		}
+	}
+	if (sDK == 0)
+	{
+		textcolor(14);
+		cout << "Khong tim thay sach trong thu vien!!\n";
+	}
+}
+
+
+//Phieu muon
+void docDSPhieuMuon(vector <PhieuMuon*> &PM)
+{
+	ifstream file;
+	file.open("PhieuMuon.txt");
+	if (file.is_open() == true)
+	{
+		cout << "Mo file thanh cong\n";
+	}
+	else
+		cout << "Mo file that bai !\n";
+	int nN = 0;
+	PhieuMuon * q;
+	file >> nN; file.ignore(1);
+	for (int i = 0; i < nN; i++)
+	{
+		q = new PhieuMuon;
+		q->readPM(file);
+		PM.push_back(q);
+	}
+	file.close();
+}
+void xuatDSPhieuMuon(vector <PhieuMuon*> PM)
+{
+	textcolor(10);
+	cout << "\nDanh sach phieu muon trong thu vien \n";
+	for (int i = 0; i < PM.size(); i++)
+	{
+		textcolor(14);
+		PM[i]->outputPM();
+	}
+}
+void ghiDSPhieuMuon(vector <PhieuMuon*> PM)
+{
+	textcolor(10);
+	cout << "\nDanh sach phieu muon \n";
+	ofstream file;
+	file.open("PhieuMuon.txt");
+	file << PM.size() << endl;
+	for (int i = 0; i < PM.size(); i++)
+	{
+		textcolor(14);
+		PM[i]->writePM(file);
+	}
+	file.close();
+}
+
+//Ham doi mau chu
+void textcolor(WORD color)
+{
+	HANDLE hConsoleOutput;
+	hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
+	GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
+
+	WORD wAttributes = screen_buffer_info.wAttributes;
+	color &= 0x000f;
+	wAttributes &= 0xfff0;
+	wAttributes |= color;
+
+	SetConsoleTextAttribute(hConsoleOutput, wAttributes);
+}
