@@ -1,0 +1,5 @@
+4
+2F,Nhap mon cong nghe thong tin,Duy Huynh,Kim Dong,3200,2015,140,10,2,2019,0
+7A,Anh Van,Duy Huynh,Kim Dong,3200,2005,140,10,2,2019,0
+2L,Ly,Minh Nguyen,Kim Dong,3200,2005,140,10,2,2019,0
+2K,Suc Khoe,Minh Nguyen,Kim Dong,3200,2005,140,10,2,2019,0
